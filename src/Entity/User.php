@@ -8,8 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity('email', message : 'L\'email est déjà utilisé par un autre utilisateur.')]
+#[UniqueEntity('username', message : 'Ce nom d\'utilisateur est déjà utilisé.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -18,21 +23,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Length(min: 2, max: 180, minMessage: "Le nom de l'utilisateur doit faire au moins {{ limit }} caractères.", maxMessage: "Le nom de l'utilisateur ne peut pas faire plus de {{ limit }} caractères.")]
+    #[Assert\Regex(
+        pattern: "/^([a-zA-Z']{2,180})$/",
+        message: 'Le nom de l\'utilisateur doit seulement contenir des lettres.'
+    )]
     private ?string $username = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Le mail doit être renseigné.')]
+    #[Assert\Email(message: 'Le format de l\'email n\'est pas valide.',)]
+    #[Assert\Length(max: 255, maxMessage: "L'email ne peut pas faire plus de {{ limit }} caractères.")]
     private ?string $email = null;
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le mot de passe doit être renseigné.')]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le mot de passe ne peut excéder {{ limit }} caractères.'
+    )]
     private ?string $password = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Task::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Task::class, orphanRemoval: false, cascade:["persist", "remove"])]
     private Collection $tasks;
 
     public function __construct()
