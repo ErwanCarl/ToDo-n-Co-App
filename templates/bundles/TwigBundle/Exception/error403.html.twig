@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+   <div id="forbidden_page" class="error-page text-center text-secondary error-page">
+        <h1 class="display-1 text-danger font-title font-weight-bold">Erreur 403</h1>
+        <h3 class="display-4 font-title">L'accès à la page a été refusé.</h3>
+
+        <div>
+            <p>L'accès à la page que vous tentez d'afficher vous a été refusé.<p>
+        </div>
+        <div>
+            <p>Vous n'avez pas les droits pas accéder à cette page.<p> 
+        </div>
+        <div class="back-home-error">
+            Vous pouvez revenir à <a href="{{ path('homepage') }}">l'accueil</a>.
+        </div>
+    </div>
+{% endblock %}

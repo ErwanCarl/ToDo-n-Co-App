@@ -4,10 +4,6 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 
-body {
-    padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
-}
-
 .slide-image {
     width: 100%;
 }
@@ -49,6 +45,112 @@ body {
     color: #333;
 }
 
-footer {
-    margin: 50px 0;
+.footer p {
+    margin: 50px 0 0 0;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.login-submit {
+    margin: 20px 0;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+h1 {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.tasks-buttons a {
+    margin: 20px auto ;
+    width: 40%;
+}
+
+.tasks-buttons div {
+    text-align: center;
+}
+
+.slide-image {
+    margin-bottom: 50px;
+}
+
+/* Tasks list */
+
+.task-actions button {
+    margin: 0 20px 10px 0;
+}
+
+.thumbnail h5 {
+    font-weight: bold;
+}
+
+.create-task-butt {
+    display: flex;
+}
+
+.create-task-butt a {
+    margin: auto;
+}
+
+/* Task create / edit */
+
+.h1-task-create {
+    margin: 60px auto 100px auto;
+}
+
+/* header */
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-div a {
+    text-decoration: none;
+    color: darkgray;
+}
+
+.nav-div ul {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0;
+}
+
+.nav-div li {
+    margin: 10px 20px;
+    list-style: none;
+    font-size: 16px;
+}
+
+#nav1 {
+    justify-content: flex-start;
+}
+
+#nav2 {
+    justify-content: flex-end;
+}
+
+/* Task create / edit */
+
+.return-button {
+    width: 30%;
+    margin: 40px auto 20px auto;
+}
+
+.add-task-button {
+    width: 10%;
+}
+
+.footer p {
+    color: darkgray;
+}
+
+/* error pages */
+
+.error-page {
+    margin: 140px auto;
 }

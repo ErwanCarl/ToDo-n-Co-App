@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\UserType;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,18 +12,22 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[Route('/users')]
+#[Route('/users', name: 'user_')]
 class UserController extends AbstractController
 {
-    #[Route('', name: 'user_list', methods: ['GET'])]
+    #[Route('', name: 'list', methods: ['GET'])]
     public function list(UserRepository $userRepository) : Response
     {
+        // $this->denyAccessUnlessGranted('ROLE_ADMIN');
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
-    #[Route('/create', name: 'user_create', methods: ['GET', 'POST'])]
+    #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
     public function create(Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher) : Response
     {
+        // $this->denyAccessUnlessGranted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']);
+        // $this->denyAccessUnlessGranted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']);
+
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
@@ -40,7 +45,7 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form]);
     }
 
-    #[Route('/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(#[MapEntity(id:'id')]User $user, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher) : Response
     {
         $form = $this->createForm(UserType::class, $user);

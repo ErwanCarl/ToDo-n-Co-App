@@ -4,11 +4,22 @@
     <h1>Bienvenue sur Todo List, l'application vous permettant de gérer l'ensemble de vos tâches sans effort !</h1>
 {% endblock %}
 
-{% block body %}
+{% block header_img %}
+    <img class="slide-image" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list">
+{% endblock %}
 
-    <div class="row">
-        <a href="{{ path('task_create') }}" class="btn btn-success">Créer une nouvelle tâche</a>
-        <a href="{{ path('task_list') }}" class="btn btn-info">Consulter la liste des tâches à faire</a>
-        <a href="" class="btn btn-secondary">Consulter la liste des tâches terminées</a>
+{% block body %}
+    {% if app.user %}
+    <div class="row tasks-buttons">
+        <div>
+            <a href="{{ path('task_create') }}" class="btn btn-success"><i class="bi bi-vector-pen pe-2"></i>Créer une nouvelle tâche</a>
+        </div>
+        <div>
+            <a href="{{ path('task_list') }}" class="btn btn-info"><i class="bi bi-search pe-2"></i>Consulter la liste des tâches à faire</a>
+        </div>
+            <a href="{{ path('task_list_done') }}" class="btn btn-secondary"><i class="bi bi-search pe-2"></i>Consulter la liste des tâches terminées</a>
+        </div>
+
     </div>
+    {% endif %}
 {% endblock %}
