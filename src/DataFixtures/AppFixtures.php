@@ -36,11 +36,24 @@ class AppFixtures extends Fixture
 
         $superAdminUser = new User();
         $superAdminUser
-            ->setUsername('Erwan Carlini')
-            ->setEmail('erwan.carlini@orange.fr')
+            ->setUsername('Super Admin')
+            ->setEmail('super.admin@orange.fr')
             ->setPassword($this->userPasswordHasher->hashPassword($superAdminUser, 'password'))
             ->setRoles(['ROLE_SUPER_ADMIN']);
         $manager->persist($superAdminUser);
+
+        $anonymousTasks = [];
+        for ($i = 0; $i < 10; $i++) {
+            $anonymousTasks[$i] = new Task();
+            $anonymousTasks[$i]->setTitle($faker->unique()->sentence(3));
+            $anonymousTasks[$i]->setContent($faker->unique()->paragraph(2));
+            $randomTimestamp = mt_rand(strtotime('2023-01-01'), strtotime('2023-08-31'));
+            $randomDateTime = new DateTimeImmutable('@' . $randomTimestamp);
+            $anonymousTasks[$i]->setCreatedAt($randomDateTime);
+            $anonymousTasks[$i]->setIsDone(rand(0,1));
+
+            $manager->persist($anonymousTasks[$i]);
+        }
 
         $tasks = [];
         for ($i = 0; $i < 50; $i++) {

@@ -12,18 +12,30 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
-#[Route('/tasks')]
+#[Route('/tasks', name: 'task_')]
 class TaskController extends AbstractController
 {
-    #[Route('', name: 'task_list', methods: ['GET'])]
+    #[Route('', name: 'list', methods: ['GET'])]
     public function list(TaskRepository $taskRepository) : Response
     {
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findUserTasks()]);
     }
 
-    #[Route('/create', name: 'task_create', methods: ['GET', 'POST'])]
+    #[Route('/done', name: 'list_done', methods: ['GET'])]
+    public function listDone(TaskRepository $taskRepository) : Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        
+        return $this->render('task/list-done.html.twig', ['tasks' => $taskRepository->findUserTasksDone()]);
+    }
+
+    #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
      public function create(Request $request, TaskRepository $taskRepository) : Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
@@ -43,9 +55,11 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form]);
     }
 
-    #[Route('/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
      public function edit(#[MapEntity(id:'id')]Task $task, Request $request, TaskRepository $taskRepository) : Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -64,20 +78,28 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/toggle', name: 'task_toggle', methods: ['POST'])]
+    #[Route('/{id}/toggle', name: 'toggle', methods: ['GET'])]
     public function toggleTask(#[MapEntity(id:'id')]Task $task, TaskRepository $taskRepository) : Response
     {
+        $this->denyAccessUnlessGranted('toggle', $task);
+
         $task->toggle(!$task->isIsDone());
         $taskRepository->save($task, true);
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
-
+        if($task->isIsDone() == true) {
+            $this->addFlash('success', sprintf("La tâche '%s' a bien été marquée comme faite.", $task->getTitle()));
+        } else {
+            $this->addFlash('success', sprintf("La tâche '%s' a bien été replacé dans les tâches à faire.", $task->getTitle()));
+        }
+        
         return $this->redirectToRoute('task_list', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/delete', name: 'task_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
     public function deleteTask(#[MapEntity(id:'id')]Task $task, TaskRepository $taskRepository, Request $request) : Response
     {
+        $this->denyAccessUnlessGranted('delete', $task);
+
         if ($this->isCsrfTokenValid(sprintf('delete%s', $task->getId()), $request->request->get('_token'))) {
             $taskRepository->remove($task, true);
             $this->addFlash('success', 'La tâche a bien été supprimée.');

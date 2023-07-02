@@ -34,7 +34,6 @@ class Task
     #[Assert\NotBlank]
     private ?DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
     #[ORM\Column(nullable: false)]
     private ?bool $isDone = null;
 

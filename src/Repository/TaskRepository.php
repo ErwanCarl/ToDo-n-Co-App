@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Task;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Task>
@@ -38,6 +39,28 @@ class TaskRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function findUserTasks() : ?array 
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.isDone = :isDone')
+            ->setParameter('isDone', 0)
+            ->orderBy('c.createdAt','ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findUserTasksDone() : ?array 
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.isDone = :isDone')
+            ->setParameter('isDone', 1)
+            ->orderBy('c.createdAt','ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    
 
 //    /**
 //     * @return Task[] Returns an array of Task objects

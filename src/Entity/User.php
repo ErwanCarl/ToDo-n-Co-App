@@ -25,8 +25,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Length(min: 2, max: 180, minMessage: "Le nom de l'utilisateur doit faire au moins {{ limit }} caractères.", maxMessage: "Le nom de l'utilisateur ne peut pas faire plus de {{ limit }} caractères.")]
     #[Assert\Regex(
-        pattern: "/^([a-zA-Z']{2,180})$/",
-        message: 'Le nom de l\'utilisateur doit seulement contenir des lettres.'
+        pattern: "/^[a-zA-Z\s]+$/",
+        message: 'Le nom de l\'utilisateur doit seulement contenir des lettres et espaces.'
     )]
     private ?string $username = null;
 
@@ -42,7 +42,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le mot de passe doit être renseigné.')]
     #[Assert\Length(
+        min: 8,
         max: 255,
+        minMessage: "Le mot de passe doit faire au moins {{ limit }} caractères.",
         maxMessage: 'Le mot de passe ne peut excéder {{ limit }} caractères.'
     )]
     private ?string $password = null;
@@ -50,7 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Task::class, orphanRemoval: false, cascade:["persist", "remove"])]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Task::class, orphanRemoval: false)]
     private Collection $tasks;
 
     public function __construct()

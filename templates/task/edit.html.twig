@@ -1,5 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block header_title %}
+    <div class="h1-task-create">
+        <h1>Modification de tâche</h1>
+    </div>
+{% endblock %}
+
 {% block body %}
     <div class="row">
         {{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
