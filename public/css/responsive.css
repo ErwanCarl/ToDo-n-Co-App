@@ -1,0 +1,135 @@
+/* --------------------------------- Mobile --------------------------------------- */
+
+@media screen and (max-width: 576px) {
+
+    /* --------------------------------- Header / Footer --------------------------------------- */
+
+    .nav-div ul {
+        flex-direction: column;
+        padding-left: 0;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .nav-div > ul > li {
+        text-align: center;
+    }
+
+    .footer p {
+        padding: 10px;
+    }
+
+    /* --------------------------------- Homepage --------------------------------------- */
+
+    .col-md-12 h1 {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .tasks-buttons a {
+        width: 90%;
+        font-size: 12px;
+    }
+
+    /* --------------------------------- Tasks create / edit --------------------------------------- */
+
+    .add-task-button, .add-user-button {
+        width: 40%;
+    }
+
+    .return-button {
+        width: 80%;
+    }
+
+    .form-create, .user-form {
+        padding: 0 20px;
+    }
+
+    .h1-task-create {
+        margin-bottom: 60px;
+    }
+
+    /* --------------------------------- Tasks lists --------------------------------------- */
+
+    .task-actions {
+        margin-top: 20px;
+    }
+    
+    .thumbnail {
+        width: 90%;
+    }
+
+    .thumbnail h5 {
+        margin: 20px 0;
+    }
+
+    .task-list {
+        justify-content: center;
+    }
+
+    .thumbnail h5, .thumbnail p, .thumbnail a, .thumbnail h4 {
+        font-size : 12px;
+    }
+    
+    /* --------------------------------- User list --------------------------------------- */
+
+    .user-tab {
+        font-size: 12px;
+        margin: 0 5px 0 0;
+    }
+
+    .resp-tab-mail {
+        display: none;
+    }
+
+    .login-submit {
+        font-size: 14px;
+    }
+
+    /* --------------------------------- User list --------------------------------------- */
+
+    .error-page {
+        margin: 80px auto 40px auto;
+    }
+
+    .error-page h1 {
+        font-size: 36px;
+    } 
+
+}
+
+/* -------------------------------------------   Tablette -----------------------------------------------------*/
+
+@media screen and (min-width: 576px) and (max-width: 992px) { 
+
+    /* --------------------------------- Header / Footer --------------------------------------- */
+
+    .navbar li {
+        font-size: 14px;
+    }
+
+    .nav-div li {
+        margin: 10px 20px 10px 0;
+    }
+
+    .add-task-button, .add-user-button {
+        width: 20%;
+    }
+
+    .return-button {
+        width: 40%;
+    }
+
+    .tasks-buttons a {
+        width: 60%;
+        font-size: 12px;
+    }
+
+
+
+
+}

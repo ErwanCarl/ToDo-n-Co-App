@@ -10,13 +10,13 @@
             Il n'y a pas encore d'utilisateur enregistré. <a href="{{ path('user_create') }}" class="btn btn-warning pull-right">Créer un utilisateur</a>
         </div>
     {% else %}
-        <div class="row">
+        <div class="row user-tab">
             <table class="table">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>Nom d'utilisateur</th>
-                    <th>Adresse d'utilisateur</th>
+                    <th class="resp-tab-mail">Adresse d'utilisateur</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -25,7 +25,7 @@
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ user.username }}</td>
-                        <td>{{ user.email }}</td>
+                        <td class="resp-tab-mail">{{ user.email }}</td>
                         <td>
                             <a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-success btn-sm">Editer</a>
                         </td>
