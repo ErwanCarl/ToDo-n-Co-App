@@ -7,11 +7,13 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row">
+    <div class="row form-create">
         {{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
             {{ form_widget(form) }}
 
-            <button type="submit" class="btn btn-success pull-right">Modifier</button>
+            <button type="submit" class="btn btn-success pull-right add-task-button">Modifier</button>
         {{ form_end(form) }}
+
+        <a href="{{ path('task_list') }}" class="btn btn-primary return-button">Retour à la liste des tâches</a>
     </div>
 {% endblock %}
