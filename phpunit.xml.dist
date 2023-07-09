@@ -16,14 +16,20 @@
   </testsuites>
   <coverage/>
   <!-- Run `composer require symfony/panther` before enabling this extension -->
-  <!--
-    <extensions>
-        <extension class="Symfony\Component\Panther\ServerExtension" />
-    </extensions>
-    -->
+  
+  <extensions>
+      <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
+      <bootstrap class="Symfony\Component\Panther\ServerExtension" />
+  </extensions>
+   
   <source>
     <include>
       <directory suffix=".php">src</directory>
     </include>
+
+    <exclude>
+      <file>src/DataFixtures/AppFixtures.php</file>
+      <file>src/Kernel.php</file>
+    </exclude>
   </source>
 </phpunit>
