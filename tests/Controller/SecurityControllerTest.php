@@ -3,8 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class SecurityControllerTest extends WebTestCase
 {
@@ -28,6 +28,7 @@ class SecurityControllerTest extends WebTestCase
             ->setUsername('username')
             ->setRoles(['ROLE_USER']);
         $this->userRepository->save($user, true);
+
         return $user;
     }
 
@@ -38,7 +39,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertGreaterThanOrEqual(1, $crawler->filter('form.login-form')->count());
-        $this->assertSelectorTextContains('h1', "Connexion");
+        $this->assertSelectorTextContains('h1', 'Connexion');
     }
 
     public function testLoginSuccess()
@@ -46,7 +47,7 @@ class SecurityControllerTest extends WebTestCase
         $this->createUser();
 
         $this->client->request(Request::METHOD_GET, '/login');
-        $this->client->submitForm('Confirmer', ['email'=>'user@email.fr', 'password'=>'password']);
+        $this->client->submitForm('Confirmer', ['email' => 'user@email.fr', 'password' => 'password']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
 
@@ -58,7 +59,7 @@ class SecurityControllerTest extends WebTestCase
     public function testLoginFailure()
     {
         $this->client->request(Request::METHOD_GET, '/login');
-        $this->client->submitForm('Confirmer', ['email'=>'invalid@email.fr', 'password'=>'invalidpassword']);
+        $this->client->submitForm('Confirmer', ['email' => 'invalid@email.fr', 'password' => 'invalidpassword']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
 

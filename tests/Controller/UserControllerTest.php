@@ -4,8 +4,6 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UserControllerTest extends WebTestCase
 {
@@ -19,7 +17,7 @@ class UserControllerTest extends WebTestCase
         $this->userPasswordHasher = $this->client->getContainer()->get('security.user_password_hasher');
         $this->userRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(User::class);
     }
-    
+
     private function createUser()
     {
         $user = new User();
@@ -29,6 +27,7 @@ class UserControllerTest extends WebTestCase
             ->setUsername('username')
             ->setRoles(['ROLE_USER']);
         $this->userRepository->save($user, true);
+
         return $user;
     }
 
@@ -41,9 +40,10 @@ class UserControllerTest extends WebTestCase
             ->setUsername('admin')
             ->setRoles(['ROLE_ADMIN']);
         $this->userRepository->save($admin, true);
+
         return $admin;
     }
-    
+
     public function testUsersList()
     {
         $this->client->request('GET', '/users');
@@ -58,7 +58,7 @@ class UserControllerTest extends WebTestCase
         $this->client->loginUser($this->createAdmin());
         $crawler = $this->client->request('GET', '/users');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertSelectorTextContains('h1', "Liste des utilisateurs");
+        $this->assertSelectorTextContains('h1', 'Liste des utilisateurs');
         $this->assertCount(1, $crawler->filter('table'));
     }
 
@@ -76,9 +76,9 @@ class UserControllerTest extends WebTestCase
         $this->client->loginUser($this->createAdmin());
         $this->client->request('GET', '/users/create');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertSelectorTextContains('h1', "Créer un utilisateur");
+        $this->assertSelectorTextContains('h1', 'Créer un utilisateur');
 
-        $this->client->submitForm('Ajouter', ['user[username]'=>'createduser', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'createduser@email.fr', 'user[roles]'=>'ROLE_USER']);
+        $this->client->submitForm('Ajouter', ['user[username]' => 'createduser', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'createduser@email.fr', 'user[roles]' => 'ROLE_USER']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $user = $this->userRepository->findOneByEmail('createduser@email.fr');
@@ -87,7 +87,7 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertCount(1, $userCount);
         $this->assertInstanceOf(User::class, $user);
-        $this->assertSelectorTextContains('h1', "Liste des utilisateurs");
+        $this->assertSelectorTextContains('h1', 'Liste des utilisateurs');
         $this->assertEquals('/users', $currentUrl);
         $this->assertEquals('L\'utilisateur a bien été ajouté.', trim($crawler->filter('.alert-success')->text()));
     }
@@ -97,11 +97,11 @@ class UserControllerTest extends WebTestCase
         $this->client->loginUser($this->createAdmin());
 
         $this->client->request('GET', '/users/create');
-        $this->client->submitForm('Ajouter', ['user[username]'=>'createduser', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'user1@email.com', 'user[roles]'=>'ROLE_USER']);
+        $this->client->submitForm('Ajouter', ['user[username]' => 'createduser', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'user1@email.com', 'user[roles]' => 'ROLE_USER']);
         $this->client->followRedirect();
 
         $this->client->request('GET', '/users/create');
-        $crawler = $this->client->submitForm('Ajouter', ['user[username]'=>'createduser', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'user2@email.com', 'user[roles]'=>'ROLE_USER']);
+        $crawler = $this->client->submitForm('Ajouter', ['user[username]' => 'createduser', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'user2@email.com', 'user[roles]' => 'ROLE_USER']);
 
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $userCount = $this->userRepository->findByUsername('createduser');
@@ -118,11 +118,11 @@ class UserControllerTest extends WebTestCase
         $this->client->loginUser($this->createAdmin());
 
         $this->client->request('GET', '/users/create');
-        $this->client->submitForm('Ajouter', ['user[username]'=>'createduserjohn', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'createduser@email.fr', 'user[roles]'=>'ROLE_USER']);
+        $this->client->submitForm('Ajouter', ['user[username]' => 'createduserjohn', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'createduser@email.fr', 'user[roles]' => 'ROLE_USER']);
         $this->client->followRedirect();
 
         $this->client->request('GET', '/users/create');
-        $crawler = $this->client->submitForm('Ajouter', ['user[username]'=>'createduseremily', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'createduser@email.fr', 'user[roles]'=>'ROLE_USER']);
+        $crawler = $this->client->submitForm('Ajouter', ['user[username]' => 'createduseremily', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'createduser@email.fr', 'user[roles]' => 'ROLE_USER']);
 
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $userCount = $this->userRepository->findByEmail('createduser@email.fr');
@@ -139,7 +139,7 @@ class UserControllerTest extends WebTestCase
         $this->client->loginUser($this->createAdmin());
 
         $this->client->request('GET', '/users/create');
-        $crawler = $this->client->submitForm('Ajouter', ['user[username]'=>'Babylone', 'user[password][first]'=>'password', 'user[password][second]'=>'password2', 'user[email]'=>'createduser@email.fr', 'user[roles]'=>'ROLE_USER']);
+        $crawler = $this->client->submitForm('Ajouter', ['user[username]' => 'Babylone', 'user[password][first]' => 'password', 'user[password][second]' => 'password2', 'user[email]' => 'createduser@email.fr', 'user[roles]' => 'ROLE_USER']);
 
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $userCount = $this->userRepository->findByEmail('createduser@email.fr');
@@ -153,9 +153,9 @@ class UserControllerTest extends WebTestCase
     {
         $this->client->loginUser($this->createAdmin());
         $this->client->request('GET', '/users/create');
-        $this->client->submitForm('Ajouter', ['user[username]'=>'createduser', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'createduser@email.fr', 'user[roles]'=>'ROLE_USER']);
+        $this->client->submitForm('Ajouter', ['user[username]' => 'createduser', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'createduser@email.fr', 'user[roles]' => 'ROLE_USER']);
         $this->client->followRedirect();
-        
+
         $user = $this->userRepository->findOneByUsername('createduser');
         $userId = $user->getId();
         $this->client->request('GET', '/users/'.$userId.'/edit');
@@ -163,7 +163,7 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertSelectorTextContains('h1', 'Modifier '.$user->getUsername());
 
-        $this->client->submitForm('Modifier', ['user[username]'=>'createduserEdited', 'user[password][first]'=>'password', 'user[password][second]'=>'password', 'user[email]'=>'createduser@email.fr', 'user[roles]'=>'ROLE_USER']);
+        $this->client->submitForm('Modifier', ['user[username]' => 'createduserEdited', 'user[password][first]' => 'password', 'user[password][second]' => 'password', 'user[email]' => 'createduser@email.fr', 'user[roles]' => 'ROLE_USER']);
         $crawler = $this->client->followRedirect();
 
         $currentUrl = $this->client->getRequest()->getPathInfo();
@@ -171,7 +171,7 @@ class UserControllerTest extends WebTestCase
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertCount(1, $userCount);
-        $this->assertSelectorTextContains('h1', "Liste des utilisateurs");
+        $this->assertSelectorTextContains('h1', 'Liste des utilisateurs');
         $this->assertEquals('/users', $currentUrl);
         $this->assertEquals('L\'utilisateur a bien été modifié.', trim($crawler->filter('.alert-success')->text()));
     }

@@ -5,13 +5,13 @@ namespace App\Security\Voter;
 use App\Entity\Task;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class TaskVoter extends Voter
 {
-    const TOGGLE = 'toggle';
-    const DELETE = 'delete';
+    public const TOGGLE = 'toggle';
+    public const DELETE = 'delete';
     private $security;
 
     public function __construct(Security $security)
@@ -43,7 +43,7 @@ class TaskVoter extends Voter
             return false;
         }
 
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN') && $user->getEmail() === 'super.admin@orange.fr') {
+        if ($this->security->isGranted('ROLE_SUPER_ADMIN') && 'super.admin@orange.fr' === $user->getEmail()) {
             return true;
         }
 
@@ -51,11 +51,11 @@ class TaskVoter extends Voter
         /** @var Task $Task */
         $task = $subject;
 
-        if ($this->security->isGranted('ROLE_ADMIN') && $task->getUser() === null) {
+        if ($this->security->isGranted('ROLE_ADMIN') && null === $task->getUser()) {
             return true;
         }
 
-        return match($attribute) {
+        return match ($attribute) {
             self::TOGGLE => $this->canToggle($task, $user),
             self::DELETE => $this->canDelete($task, $user),
             default => throw new \LogicException('Ce voteur ne devrait pas être atteint.')

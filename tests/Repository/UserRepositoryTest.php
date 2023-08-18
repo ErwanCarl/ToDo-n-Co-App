@@ -8,23 +8,23 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserRepositoryTest extends KernelTestCase
-{    
-    public function setUp() : void
+{
+    public function setUp(): void
     {
         self::bootKernel();
     }
-    
-    public function testCreateAndRemoveUser() : void 
+
+    public function testCreateAndRemoveUser(): void
     {
         $userRepository = new UserRepository(static::getContainer()->get(ManagerRegistry::class));
         $user = new User();
 
-        $user 
+        $user
             ->setEmail('user@gmail.com')
             ->setPassword('password')
             ->setRoles(['ROLE_ADMIN'])
             ->setUsername('User')
-        ; 
+        ;
 
         $userRepository->save($user, true);
         $this->assertNotNull($userRepository->findOneByEmail('user@gmail.com'));

@@ -11,7 +11,6 @@ class DefaultControllerTest extends WebTestCase
     private $userRepository;
     private $userPasswordHasher;
 
-
     protected function setUp(): void
     {
         $this->client = static::createClient();
@@ -29,6 +28,7 @@ class DefaultControllerTest extends WebTestCase
             ->setUsername('username')
             ->setRoles(['ROLE_USER']);
         $this->userRepository->save($user, true);
+
         return $user;
     }
 
@@ -41,6 +41,7 @@ class DefaultControllerTest extends WebTestCase
             ->setUsername('admin')
             ->setRoles(['ROLE_ADMIN']);
         $this->userRepository->save($admin, true);
+
         return $admin;
     }
 

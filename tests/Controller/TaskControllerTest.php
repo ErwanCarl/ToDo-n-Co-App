@@ -20,7 +20,7 @@ class TaskControllerTest extends WebTestCase
         $this->userRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(User::class);
         $this->taskRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(Task::class);
     }
-    
+
     private function createUser()
     {
         $user = new User();
@@ -30,9 +30,10 @@ class TaskControllerTest extends WebTestCase
             ->setUsername('username')
             ->setRoles(['ROLE_USER']);
         $this->userRepository->save($user, true);
+
         return $user;
     }
-    
+
     public function testTasksList()
     {
         $this->client->request('GET', '/tasks');
@@ -42,11 +43,11 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('/login', $currentUrl);
 
         $this->client->loginUser($this->createUser());
-        $crawler =  $this->client->request('GET', '/tasks');
+        $crawler = $this->client->request('GET', '/tasks');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertSelectorTextContains('h1', "Liste des tâches à réaliser");
-        $this->assertSelectorTextContains('.btn-info', "Créer une nouvelle tâche");
+        $this->assertSelectorTextContains('h1', 'Liste des tâches à réaliser');
+        $this->assertSelectorTextContains('.btn-info', 'Créer une nouvelle tâche');
 
         $link = $crawler->selectLink('Créer une nouvelle tâche')->link();
         $crawler = $this->client->click($link);
@@ -72,8 +73,8 @@ class TaskControllerTest extends WebTestCase
         $this->client->loginUser($this->createUser());
         $crawler = $this->client->request('GET', '/tasks/done');
 
-        $this->assertSelectorTextContains('h1', "Liste des tâches terminées");
-        $this->assertSelectorTextContains('.btn-info', "Créer une nouvelle tâche");
+        $this->assertSelectorTextContains('h1', 'Liste des tâches terminées');
+        $this->assertSelectorTextContains('.btn-info', 'Créer une nouvelle tâche');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         $link = $crawler->selectLink('Créer une nouvelle tâche')->link();
@@ -100,10 +101,10 @@ class TaskControllerTest extends WebTestCase
         $this->client->loginUser($user);
         $this->client->request('GET', '/tasks/create');
 
-        $this->assertSelectorTextContains('h1', "Création de tâche");
+        $this->assertSelectorTextContains('h1', 'Création de tâche');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->submitForm('Ajouter', ['task[title]'=>'Title', 'task[content]'=>'Content']);
+        $this->client->submitForm('Ajouter', ['task[title]' => 'Title', 'task[content]' => 'Content']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $task = $this->taskRepository->findOneByUser($user);
@@ -123,16 +124,16 @@ class TaskControllerTest extends WebTestCase
         $user = $this->createUser();
         $this->client->loginUser($user);
         $this->client->request('GET', '/tasks/create');
-        $this->client->submitForm('Ajouter', ['task[title]'=>'Title', 'task[content]'=>'Content']);
+        $this->client->submitForm('Ajouter', ['task[title]' => 'Title', 'task[content]' => 'Content']);
         $this->client->followRedirect();
         $task = $this->taskRepository->findOneByUser($user);
 
         $taskId = $task->getId();
         $this->client->request('GET', '/tasks/'.$taskId.'/edit');
-        $this->assertSelectorTextContains('h1', "Modification de tâche");
+        $this->assertSelectorTextContains('h1', 'Modification de tâche');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->submitForm('Modifier', ['task[title]'=>'EditedTitle', 'task[content]'=>'EditedContent']);
+        $this->client->submitForm('Modifier', ['task[title]' => 'EditedTitle', 'task[content]' => 'EditedContent']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $task = $this->taskRepository->findOneByUser($user);
@@ -158,7 +159,7 @@ class TaskControllerTest extends WebTestCase
         $user = $this->createUser();
         $this->client->loginUser($user);
         $this->client->request('GET', '/tasks/create');
-        $this->client->submitForm('Ajouter', ['task[title]'=>'Title', 'task[content]'=>'Content']);
+        $this->client->submitForm('Ajouter', ['task[title]' => 'Title', 'task[content]' => 'Content']);
         $crawler = $this->client->followRedirect();
         $task = $this->taskRepository->findOneByUser($user);
         $taskId = $task->getId();
@@ -172,7 +173,7 @@ class TaskControllerTest extends WebTestCase
         // Use the button text to find the specific toggle button in the parent
         $toggleButton = $thumbnailDiv->selectButton('Marquer comme faite');
         // Submit the form associated with the toggle button
-        $this->client->submit($toggleButton->form());;
+        $this->client->submit($toggleButton->form());
 
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
@@ -210,9 +211,9 @@ class TaskControllerTest extends WebTestCase
         $user = $this->createUser();
         $this->client->loginUser($user);
         $this->client->request('GET', '/tasks/create');
-        $this->client->submitForm('Ajouter', ['task[title]'=>'Title', 'task[content]'=>'Content']);
+        $this->client->submitForm('Ajouter', ['task[title]' => 'Title', 'task[content]' => 'Content']);
         $crawler = $this->client->followRedirect();
-        
+
         // Find the specific <h4> by its content
         $h4ToClick = $crawler->filter('h4:contains("Title")')->first();
         // Find the parent .thumbnail div containing the <h4> and the toggle button
@@ -220,7 +221,7 @@ class TaskControllerTest extends WebTestCase
         // Use the button text to find the specific toggle button in the parent
         $deleteButton = $thumbnailDiv->selectButton('Supprimer');
         // Submit the form associated with the toggle button
-        $this->client->submit($deleteButton->form());;
+        $this->client->submit($deleteButton->form());
 
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
@@ -230,6 +231,6 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertEquals('/tasks', $currentUrl);
         $this->assertCount(0, $taskCount);
-        $this->assertEquals("La tâche a bien été supprimée.", trim($crawler->filter('.alert-success')->text()));
+        $this->assertEquals('La tâche a bien été supprimée.', trim($crawler->filter('.alert-success')->text()));
     }
 }
