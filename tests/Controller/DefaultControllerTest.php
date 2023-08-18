@@ -9,10 +9,14 @@ class DefaultControllerTest extends WebTestCase
 {
     private $client;
     private $userRepository;
+    private $userPasswordHasher;
+
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
+        $this->client->followRedirects();
+        $this->userPasswordHasher = $this->client->getContainer()->get('security.user_password_hasher');
         $this->userRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(User::class);
     }
 
@@ -21,7 +25,7 @@ class DefaultControllerTest extends WebTestCase
         $user = new User();
         $user
             ->setEmail('user@email.fr')
-            ->setPassword('password')
+            ->setPassword($this->userPasswordHasher->hashPassword($user, 'password'))
             ->setUsername('username')
             ->setRoles(['ROLE_USER']);
         $this->userRepository->save($user, true);
@@ -33,7 +37,7 @@ class DefaultControllerTest extends WebTestCase
         $admin = new User();
         $admin
             ->setEmail('admin@email.fr')
-            ->setPassword('password')
+            ->setPassword($this->userPasswordHasher->hashPassword($admin, 'password'))
             ->setUsername('admin')
             ->setRoles(['ROLE_ADMIN']);
         $this->userRepository->save($admin, true);
