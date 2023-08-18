@@ -1,16 +1,16 @@
-<?php 
+<?php
 
 namespace App\EventListener;
 
-use Symfony\Component\Security\Http\Event\LogoutEvent;
-use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
+use Symfony\Component\Security\Http\Event\LogoutEvent;
 
 class LoginSubscriber extends AbstractController implements EventSubscriberInterface
 {
-    public function __construct(private UrlGeneratorInterface $urlGenerator) 
+    public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
     }
 
@@ -18,7 +18,7 @@ class LoginSubscriber extends AbstractController implements EventSubscriberInter
     {
         return [
             LoginSuccessEvent::class => 'onLoginSuccess',
-            LogoutEvent::class => 'onLogout'
+            LogoutEvent::class => 'onLogout',
         ];
     }
 

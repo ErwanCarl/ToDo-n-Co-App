@@ -32,7 +32,7 @@
                     {% if app.user == task.user or is_granted('ROLE_SUPER_ADMIN') %}
                     <div class="task-actions">
                         <div class="task-actions-toggle">
-                            <form action="{{ path('task_toggle', {'id' : task.id }) }}">
+                            <form method="post" action="{{ path('task_toggle', {'id' : task.id }) }}">
                                 <button class="btn btn-success btn-sm pull-right">
                                     {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
                                 </button>

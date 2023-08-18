@@ -4,31 +4,30 @@ namespace App\Tests\Entity;
 
 use App\Entity\Task;
 use App\Entity\User;
-use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TaskTest extends KernelTestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         self::bootKernel();
     }
 
     public function testTaskEntity(): void
     {
-        $user = New User();
+        $user = new User();
         $task = new Task();
         $task
             ->setTitle('TestTitle')
             ->setContent('Content test')
             ->setUser($user)
-        ;   
-            
+        ;
+
         $this->assertEquals('Content test', $task->getContent());
         $this->assertEquals('TestTitle', $task->getTitle());
         $this->assertEquals($user, $task->getUser());
-        $this->assertInstanceOf(DateTimeImmutable::class, $task->getCreatedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $task->getCreatedAt());
         $this->assertEquals(false, $task->isIsDone());
 
         $task->toggle(!$task->isIsDone());
@@ -38,7 +37,7 @@ class TaskTest extends KernelTestCase
     public function testTaskEntityOnInvalidInput(): void
     {
         $task1 = new Task();
-        $task1->setTitle('T')->setContent('');   
+        $task1->setTitle('T')->setContent('');
 
         $task2 = new Task();
         $task2->setTitle('')->setContent('Valid content');

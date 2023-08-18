@@ -3,14 +3,17 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\Request;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SecurityControllerTest extends WebTestCase
 {
-    private $client;
-    private $userRepository;
-    private $userPasswordHasher;
+    private KernelBrowser $client;
+    private UserRepository $userRepository;
+    private UserPasswordHasherInterface $userPasswordHasher;
 
     protected function setUp(): void
     {
@@ -19,7 +22,7 @@ class SecurityControllerTest extends WebTestCase
         $this->userRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(User::class);
     }
 
-    private function createUser()
+    private function createUser(): User
     {
         $user = new User();
         $user
@@ -28,25 +31,26 @@ class SecurityControllerTest extends WebTestCase
             ->setUsername('username')
             ->setRoles(['ROLE_USER']);
         $this->userRepository->save($user, true);
+
         return $user;
     }
 
-    public function testLoginAccess()
+    public function testLoginAccess(): void
     {
         $crawler = $this->client->request('GET', '/login');
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertGreaterThanOrEqual(1, $crawler->filter('form.login-form')->count());
-        $this->assertSelectorTextContains('h1', "Connexion");
+        $this->assertSelectorTextContains('h1', 'Connexion');
     }
 
-    public function testLoginSuccess()
+    public function testLoginSuccess(): void
     {
         $this->createUser();
 
         $this->client->request(Request::METHOD_GET, '/login');
-        $this->client->submitForm('Confirmer', ['email'=>'user@email.fr', 'password'=>'password']);
+        $this->client->submitForm('Confirmer', ['email' => 'user@email.fr', 'password' => 'password']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
 
@@ -55,10 +59,10 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals('/', $currentUrl); // Redirect after successful login
     }
 
-    public function testLoginFailure()
+    public function testLoginFailure(): void
     {
         $this->client->request(Request::METHOD_GET, '/login');
-        $this->client->submitForm('Confirmer', ['email'=>'invalid@email.fr', 'password'=>'invalidpassword']);
+        $this->client->submitForm('Confirmer', ['email' => 'invalid@email.fr', 'password' => 'invalidpassword']);
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
 
@@ -69,7 +73,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals('Identifiants invalides.', trim($crawler->filter('.alert-danger')->text()));
     }
 
-    public function testAuthenticatedUserRedirectsFromLoginPage()
+    public function testAuthenticatedUserRedirectsFromLoginPage(): void
     {
         $this->client->loginUser($this->createUser());
 
@@ -85,7 +89,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals('Vous êtes déjà connecté.', trim($crawler->filter('.alert-danger')->text()));
     }
 
-    public function testLogout()
+    public function testLogout(): void
     {
         $this->client->loginUser($this->createUser());
         $crawler = $this->client->request('GET', '/logout');

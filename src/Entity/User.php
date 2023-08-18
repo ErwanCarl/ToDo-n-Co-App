@@ -7,11 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use phpDocumentor\Reflection\Types\Null_;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity('email', message : 'L\'email est déjà utilisé par un autre utilisateur.')]
@@ -34,7 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank(message: 'Le mail doit être renseigné.')]
-    #[Assert\Email(message: 'Le format de l\'email n\'est pas valide.',)]
+    #[Assert\Email(message: 'Le format de l\'email n\'est pas valide.', )]
     #[Assert\Length(max: 255, maxMessage: "L'email ne peut pas faire plus de {{ limit }} caractères.")]
     private ?string $email = null;
 
@@ -46,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(
         min: 8,
         max: 255,
-        minMessage: "Le mot de passe doit faire au moins {{ limit }} caractères.",
+        minMessage: 'Le mot de passe doit faire au moins {{ limit }} caractères.',
         maxMessage: 'Le mot de passe ne peut excéder {{ limit }} caractères.'
     )]
     private ?string $password = null;
@@ -93,7 +92,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return null;
     }
-    
+
     /**
      * @see UserInterface
      */

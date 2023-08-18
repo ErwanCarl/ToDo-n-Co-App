@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserTest extends KernelTestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         self::bootKernel();
     }
@@ -32,7 +32,7 @@ class UserTest extends KernelTestCase
         $this->assertEquals('John Doe', $user->getUsername());
         $this->assertEquals('john.doe@gmail.com', $user->getEmail());
         $this->assertEquals('password', $user->getPassword());
-        $this->assertEquals(['ROLE_ADMIN','ROLE_USER'], $user->getRoles());
+        $this->assertEquals(['ROLE_ADMIN', 'ROLE_USER'], $user->getRoles());
         $this->assertCount(1, $user->getTasks());
         $this->assertContains($task2, $user->getTasks());
         $this->assertNotContains($task1, $user->getTasks());
@@ -51,7 +51,7 @@ class UserTest extends KernelTestCase
             ->setEmail('erwan.carlini')
             ->setPassword('pass')
             ->setUsername('User2');
-        
+
         $user3 = new User();
         $user3
             ->setEmail('UserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUser@email.com')
@@ -69,7 +69,7 @@ class UserTest extends KernelTestCase
         $this->assertEquals('Le mail doit être renseigné.', $errors1[2]->getMessage());
         $this->assertEquals('Le mot de passe doit être renseigné.', $errors1[3]->getMessage());
         $this->assertEquals('Le mot de passe doit faire au moins 8 caractères.', $errors1[4]->getMessage());
-        
+
         $this->assertCount(3, $errors2);
         $this->assertEquals('Le nom de l\'utilisateur doit seulement contenir des lettres et espaces.', $errors2[0]->getMessage());
         $this->assertEquals('Le format de l\'email n\'est pas valide.', $errors2[1]->getMessage());
@@ -79,6 +79,5 @@ class UserTest extends KernelTestCase
         $this->assertEquals('Le nom de l\'utilisateur ne peut pas faire plus de 180 caractères.', $errors3[0]->getMessage());
         $this->assertEquals('L\'email ne peut pas faire plus de 255 caractères.', $errors3[1]->getMessage());
         $this->assertEquals('Le mot de passe ne peut excéder 255 caractères.', $errors3[2]->getMessage());
-        
     }
 }
