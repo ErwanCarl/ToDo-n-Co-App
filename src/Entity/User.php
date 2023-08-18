@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Null_;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -23,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: 'Le nom de l\'utilisateur doit être renseigné.')]
     #[Assert\Length(min: 2, max: 180, minMessage: "Le nom de l'utilisateur doit faire au moins {{ limit }} caractères.", maxMessage: "Le nom de l'utilisateur ne peut pas faire plus de {{ limit }} caractères.")]
     #[Assert\Regex(
         pattern: "/^[a-zA-Z\s]+$/",
@@ -87,7 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    public function getSalt()
+    public function getSalt(): ?Null_
     {
         return null;
     }
@@ -131,8 +133,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 
     public function getEmail(): ?string

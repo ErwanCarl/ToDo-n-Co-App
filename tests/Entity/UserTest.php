@@ -4,10 +4,16 @@ namespace App\Tests\Entity;
 
 use App\Entity\Task;
 use App\Entity\User;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserTest extends TestCase
+class UserTest extends KernelTestCase
 {
+    public function setUp() : void
+    {
+        self::bootKernel();
+    }
+
     public function testUserEntity(): void
     {
         $task1 = new Task();
@@ -30,5 +36,49 @@ class UserTest extends TestCase
         $this->assertCount(1, $user->getTasks());
         $this->assertContains($task2, $user->getTasks());
         $this->assertNotContains($task1, $user->getTasks());
+    }
+
+    public function testUserEntityOnInvalidInput(): void
+    {
+        $user1 = new User();
+        $user1
+            ->setEmail('')
+            ->setPassword('')
+            ->setUsername('');
+
+        $user2 = new User();
+        $user2
+            ->setEmail('erwan.carlini')
+            ->setPassword('pass')
+            ->setUsername('User2');
+        
+        $user3 = new User();
+        $user3
+            ->setEmail('UserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUser@email.com')
+            ->setPassword('UserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUser')
+            ->setUsername('UserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUserUser');
+
+        $validator = self::getContainer()->get(ValidatorInterface::class);
+        $errors1 = $validator->validate($user1);
+        $errors2 = $validator->validate($user2);
+        $errors3 = $validator->validate($user3);
+
+        $this->assertCount(5, $errors1);
+        $this->assertEquals('Le nom de l\'utilisateur doit être renseigné.', $errors1[0]->getMessage());
+        $this->assertEquals('Le nom de l\'utilisateur doit faire au moins 2 caractères.', $errors1[1]->getMessage());
+        $this->assertEquals('Le mail doit être renseigné.', $errors1[2]->getMessage());
+        $this->assertEquals('Le mot de passe doit être renseigné.', $errors1[3]->getMessage());
+        $this->assertEquals('Le mot de passe doit faire au moins 8 caractères.', $errors1[4]->getMessage());
+        
+        $this->assertCount(3, $errors2);
+        $this->assertEquals('Le nom de l\'utilisateur doit seulement contenir des lettres et espaces.', $errors2[0]->getMessage());
+        $this->assertEquals('Le format de l\'email n\'est pas valide.', $errors2[1]->getMessage());
+        $this->assertEquals('Le mot de passe doit faire au moins 8 caractères.', $errors2[2]->getMessage());
+
+        $this->assertCount(3, $errors3);
+        $this->assertEquals('Le nom de l\'utilisateur ne peut pas faire plus de 180 caractères.', $errors3[0]->getMessage());
+        $this->assertEquals('L\'email ne peut pas faire plus de 255 caractères.', $errors3[1]->getMessage());
+        $this->assertEquals('Le mot de passe ne peut excéder 255 caractères.', $errors3[2]->getMessage());
+        
     }
 }

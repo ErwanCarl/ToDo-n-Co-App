@@ -105,7 +105,6 @@ class TaskController extends AbstractController
         $task->toggle(!$task->isIsDone());
         $taskRepository->save($task, true);
         $cachePool->invalidateTags(["tasksDoneCache","tasksToDoCache"]);
-    
 
         if($task->isIsDone() == true) {
             $this->addFlash('success', sprintf("La tâche '%s' a bien été marquée comme faite.", $task->getTitle()));
