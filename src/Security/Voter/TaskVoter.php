@@ -12,7 +12,7 @@ class TaskVoter extends Voter
 {
     public const TOGGLE = 'toggle';
     public const DELETE = 'delete';
-    private $security;
+    private Security $security;
 
     public function __construct(Security $security)
     {
@@ -48,7 +48,7 @@ class TaskVoter extends Voter
         }
 
         // you know $subject is a Task object, thanks to `supports()`
-        /** @var Task $Task */
+        /** @var Task $task */
         $task = $subject;
 
         if ($this->security->isGranted('ROLE_ADMIN') && null === $task->getUser()) {

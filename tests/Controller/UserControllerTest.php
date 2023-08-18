@@ -3,13 +3,16 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 
 class UserControllerTest extends WebTestCase
 {
-    private $client;
-    private $userRepository;
-    private $userPasswordHasher;
+    private KernelBrowser $client;
+    private UserRepository $userRepository;
+    private UserPasswordHasher $userPasswordHasher;
 
     protected function setUp(): void
     {
@@ -18,7 +21,7 @@ class UserControllerTest extends WebTestCase
         $this->userRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(User::class);
     }
 
-    private function createUser()
+    private function createUser(): User
     {
         $user = new User();
         $user
@@ -31,7 +34,7 @@ class UserControllerTest extends WebTestCase
         return $user;
     }
 
-    private function createAdmin()
+    private function createAdmin(): User
     {
         $admin = new User();
         $admin
@@ -44,7 +47,7 @@ class UserControllerTest extends WebTestCase
         return $admin;
     }
 
-    public function testUsersList()
+    public function testUsersList(): void
     {
         $this->client->request('GET', '/users');
         $this->client->followRedirect();
@@ -62,7 +65,7 @@ class UserControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('table'));
     }
 
-    public function testUserCreationSuccess()
+    public function testUserCreationSuccess(): void
     {
         $this->client->request('GET', '/users/create');
         $this->client->followRedirect();
@@ -92,7 +95,7 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals('L\'utilisateur a bien été ajouté.', trim($crawler->filter('.alert-success')->text()));
     }
 
-    public function testUserCreationFailureOnUsernameUnicity()
+    public function testUserCreationFailureOnUsernameUnicity(): void
     {
         $this->client->loginUser($this->createAdmin());
 
@@ -113,7 +116,7 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals('Ce nom d\'utilisateur est déjà utilisé.', trim($crawler->filter('.form-error-message')->text()));
     }
 
-    public function testUserCreationFailureOnEmailUnicity()
+    public function testUserCreationFailureOnEmailUnicity(): void
     {
         $this->client->loginUser($this->createAdmin());
 
@@ -134,7 +137,7 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals('L\'email est déjà utilisé par un autre utilisateur.', trim($crawler->filter('.form-error-message')->text()));
     }
 
-    public function testUserCreationFailureOnPasswordMistake()
+    public function testUserCreationFailureOnPasswordMistake(): void
     {
         $this->client->loginUser($this->createAdmin());
 
@@ -149,7 +152,7 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals('Les deux mots de passe doivent correspondre.', trim($crawler->filter('.form-error-message')->text()));
     }
 
-    public function testUserEdit()
+    public function testUserEdit(): void
     {
         $this->client->loginUser($this->createAdmin());
         $this->client->request('GET', '/users/create');

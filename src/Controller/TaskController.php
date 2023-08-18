@@ -96,16 +96,18 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/toggle', name: 'toggle', methods: ['GET'])]
+    #[Route('/{id}/toggle', name: 'toggle', methods: ['GET', 'POST'])]
     public function toggleTask(#[MapEntity(id: 'id')] Task $task, TaskRepository $taskRepository, TagAwareCacheInterface $cachePool): Response
     {
         $this->denyAccessUnlessGranted('toggle', $task);
 
         $task->toggle(!$task->isIsDone());
+
         $taskRepository->save($task, true);
+
         $cachePool->invalidateTags(['tasksDoneCache', 'tasksToDoCache']);
 
-        if (true == $task->isIsDone()) {
+        if (true === $task->isIsDone()) {
             $this->addFlash('success', sprintf("La tâche '%s' a bien été marquée comme faite.", $task->getTitle()));
         } else {
             $this->addFlash('success', sprintf("La tâche '%s' a bien été replacé dans les tâches à faire.", $task->getTitle()));

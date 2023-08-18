@@ -3,13 +3,16 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DefaultControllerTest extends WebTestCase
 {
-    private $client;
-    private $userRepository;
-    private $userPasswordHasher;
+    private KernelBrowser $client;
+    private UserRepository $userRepository;
+    private UserPasswordHasherInterface $userPasswordHasher;
 
     protected function setUp(): void
     {
@@ -19,7 +22,7 @@ class DefaultControllerTest extends WebTestCase
         $this->userRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(User::class);
     }
 
-    private function createUser()
+    private function createUser(): User
     {
         $user = new User();
         $user
@@ -32,7 +35,7 @@ class DefaultControllerTest extends WebTestCase
         return $user;
     }
 
-    private function createAdmin()
+    private function createAdmin(): User
     {
         $admin = new User();
         $admin
@@ -45,7 +48,7 @@ class DefaultControllerTest extends WebTestCase
         return $admin;
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $crawler = $this->client->request('GET', '/');
 
@@ -57,7 +60,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals('Accueil', trim($crawler->filter('.navbar #nav1 a')->text()));
     }
 
-    public function testAuthenticatedUserButtons()
+    public function testAuthenticatedUserButtons(): void
     {
         $this->client->loginUser($this->createUser());
 
@@ -74,7 +77,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals('Consulter la liste des tâches terminées', trim($crawler->filter('.tasks-buttons a.btn-secondary')->text()));
     }
 
-    public function testAuthenticatedAdminButtons()
+    public function testAuthenticatedAdminButtons(): void
     {
         $this->client->loginUser($this->createAdmin());
 

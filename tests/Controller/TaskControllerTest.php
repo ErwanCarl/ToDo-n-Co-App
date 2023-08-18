@@ -4,14 +4,18 @@ namespace App\Tests\Controller;
 
 use App\Entity\Task;
 use App\Entity\User;
+use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class TaskControllerTest extends WebTestCase
 {
-    private $client;
-    private $userRepository;
-    private $taskRepository;
-    private $userPasswordHasher;
+    private KernelBrowser $client;
+    private UserRepository $userRepository;
+    private TaskRepository $taskRepository;
+    private UserPasswordHasherInterface $userPasswordHasher;
 
     protected function setUp(): void
     {
@@ -21,7 +25,7 @@ class TaskControllerTest extends WebTestCase
         $this->taskRepository = $this->client->getContainer()->get('doctrine.orm.entity_manager')->getRepository(Task::class);
     }
 
-    private function createUser()
+    private function createUser(): User
     {
         $user = new User();
         $user
@@ -34,7 +38,7 @@ class TaskControllerTest extends WebTestCase
         return $user;
     }
 
-    public function testTasksList()
+    public function testTasksList(): void
     {
         $this->client->request('GET', '/tasks');
         $this->client->followRedirect();
@@ -62,7 +66,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('/tasks', $currentUrl);
     }
 
-    public function testTasksDone()
+    public function testTasksDone(): void
     {
         $this->client->request('GET', '/tasks/done');
         $this->client->followRedirect();
@@ -90,7 +94,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('/tasks', $currentUrl);
     }
 
-    public function testTasksCreate()
+    public function testTasksCreate(): void
     {
         $this->client->request('GET', '/tasks/create');
         $this->client->followRedirect();
@@ -119,7 +123,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('La tâche a été bien été ajoutée.', trim($crawler->filter('.alert-success')->text()));
     }
 
-    public function testTasksEdit()
+    public function testTasksEdit(): void
     {
         $user = $this->createUser();
         $this->client->loginUser($user);
@@ -154,17 +158,13 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('/tasks/'.$taskId.'/edit', $currentUrl);
     }
 
-    public function testTasksToggle()
+    public function testTasksSimpleToggle(): void
     {
         $user = $this->createUser();
         $this->client->loginUser($user);
         $this->client->request('GET', '/tasks/create');
         $this->client->submitForm('Ajouter', ['task[title]' => 'Title', 'task[content]' => 'Content']);
         $crawler = $this->client->followRedirect();
-        $task = $this->taskRepository->findOneByUser($user);
-        $taskId = $task->getId();
-
-        // $this->client->request('GET', '/tasks/'.$taskId.'/toggle');
 
         // Find the specific <h4> by its content
         $h4ToClick = $crawler->filter('h4:contains("Title")')->first();
@@ -177,36 +177,63 @@ class TaskControllerTest extends WebTestCase
 
         $crawler = $this->client->followRedirect();
         $currentUrl = $this->client->getRequest()->getPathInfo();
-        $task = $this->taskRepository->findOneByTitle('Title');
-        // dd($task->isIsDone());
+        $toggledTask = $this->taskRepository->findOneByUser($user);
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertResponseIsSuccessful();
         $this->assertEquals('/tasks', $currentUrl);
-        // $this->assertEquals(true, $task->isIsDone());
-        $this->assertEquals("La tâche '".$task->getTitle()."' a bien été marquée comme faite.", trim($crawler->filter('.alert-success')->text()));
+        $this->assertEquals(true, $toggledTask->isIsDone());
+        $this->assertEquals("La tâche '".$toggledTask->getTitle()."' a bien été marquée comme faite.", trim($crawler->filter('.alert-success')->text()));
 
         $crawler = $this->client->request('GET', '/tasks/done');
         $filteredH4 = $crawler->filter('h4:contains("Title")');
-        $this->assertCount(1, $filteredH4);
 
-        $this->client->request('GET', '/tasks/'.$taskId.'/toggle');
+        $this->assertCount(1, $filteredH4);
+    }
+
+    public function testTasksDoubleToggle(): void
+    {
+        $user = $this->createUser();
+        $this->client->loginUser($user);
+        $this->client->request('GET', '/tasks/create');
+        $this->client->submitForm('Ajouter', ['task[title]' => 'Title', 'task[content]' => 'Content']);
         $crawler = $this->client->followRedirect();
+
+        // Find the specific <h4> by its content
+        $h4ToClick = $crawler->filter('h4:contains("Title")')->first();
+        // Find the parent .thumbnail div containing the <h4> and the toggle button
+        $thumbnailDiv = $h4ToClick->closest('.thumbnail');
+        // Use the button text to find the specific toggle button in the parent
+        $toggleButton = $thumbnailDiv->selectButton('Marquer comme faite');
+        // Submit the form associated with the toggle button
+        $this->client->submit($toggleButton->form());
+
+        $this->client->followRedirect();
+        $crawler = $this->client->request('GET', '/tasks/done');
+
+        // Find the specific <h4> by its content
+        $h4ToClickToggled = $crawler->filter('h4:contains("Title")')->first();
+        // Find the parent .thumbnail div containing the <h4> and the toggle button
+        $thumbnailDivToggled = $h4ToClickToggled->closest('.thumbnail');
+        // Use the button text to find the specific toggle button in the parent
+        $toggleTwiceButton = $thumbnailDivToggled->selectButton('Marquer non terminée');
+        // Submit the form associated with the toggle button
+        $this->client->submit($toggleTwiceButton->form());
+        $crawler = $this->client->followRedirect();
+
         $currentUrl = $this->client->getRequest()->getPathInfo();
         $task = $this->taskRepository->findOneByTitle('Title');
-        $filteredH4 = $crawler->filter('h4:contains("Title")');
+        $filteredH4Toggled = $crawler->filter('h4:contains("Title")');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertResponseIsSuccessful();
         $this->assertEquals('/tasks', $currentUrl);
         $this->assertEquals(false, $task->isIsDone());
         $this->assertEquals("La tâche '".$task->getTitle()."' a bien été replacé dans les tâches à faire.", trim($crawler->filter('.alert-success')->text()));
-        $this->assertCount(1, $filteredH4);
-
-        $this->client->request('GET', '/tasks/'.$taskId.'/delete');
+        $this->assertCount(1, $filteredH4Toggled);
     }
 
-    public function testTasksDelete()
+    public function testTasksDelete(): void
     {
         $user = $this->createUser();
         $this->client->loginUser($user);
