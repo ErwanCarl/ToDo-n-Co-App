@@ -113,4 +113,3 @@ By following this guide, you will contribute effectively and in a high quality t
 Be sure to follow best practices, adhere to conventions, and maintain a smooth contribution process.  
   
 Your work will contribute to maintaining a quality code and harmonious collaboration within the team.
-  
