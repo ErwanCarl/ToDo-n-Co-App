@@ -36,7 +36,7 @@ class Task
     #[ORM\Column(nullable: false)]
     private ?bool $isDone = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\ManyToOne(inversedBy: 'tasks', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true, name: 'user_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     private ?User $user = null;
 
